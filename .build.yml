@@ -1,9 +1,10 @@
-image: alpine/edge
+image: archlinux
 packages:
   - go
 sources:
   - https://git.sr.ht/~poldi1405/go-yenc
 tasks:
-- test: |
-  cd go-yenc
-  go test -v -cover .
+  - setup: |
+      cd go-yenc
+      git switch lookup-table
+      go test -v -cover .
