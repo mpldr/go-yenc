@@ -13,6 +13,7 @@ categories are: raw speed and data throughput.
 - SIMD (not yet implemented)
 - Bootleg SIMD (do it with a 32/64-bit integer and split it up) (not yet implemented)
 - Bitwise Operations (not yet implemented)
+- `io.Writer` implementation
 
 ## Raw Speed
 
