@@ -1,0 +1,9 @@
+image: alpine/edge
+packages:
+  - go
+sources:
+  - https://git.sr.ht/~poldi1405/go-yenc
+tasks:
+  - test: |
+    cd go-yenc
+    go test .
