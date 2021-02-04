@@ -4,6 +4,6 @@ packages:
 sources:
   - https://git.sr.ht/~poldi1405/go-yenc
 tasks:
-  - test: |
-    cd go-yenc
-    go test -v -cover .
+- test: |
+  cd go-yenc
+  go test -v -cover .
