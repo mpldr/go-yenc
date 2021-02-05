@@ -13,8 +13,7 @@ func (y *Encoder) EncodeFile(fh *os.File, output io.Writer) error {
 	bufrd := bufio.NewReader(fh)
 	var buf []byte
 
-	// TODO: make it dynamic
-	workercount := 16
+	workercount := GetLimit()
 
 	workqueue := make(chan chan byte, workercount*2)
 	results := make(chan chan byte, workercount*2)
