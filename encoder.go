@@ -14,16 +14,19 @@ func (y *Encoder) EncodeFile(fh *os.File, output io.Writer) error {
 	var buf []byte
 
 	// TODO: make it dynamic
-	workercount := 16
+	workercount := 1
 
 	workqueue := make(chan chan byte, workercount*2)
 	results := make(chan chan byte, workercount*2)
 	for i := 0; i < workercount; i++ {
 		go encodeWorker(ctx, workqueue, results)
 	}
+	var writeerror error
+	go func() {err := resultWriter(ctx, output, results, cancel); writeerror = err}()
 
 	for {
 		inchan := make(chan byte, BUFFERSIZE)
+		outchan := make(chan byte, BUFFERSIZE)
 		bytecount, err := bufrd.Read(buf)
 		if err != nil && err != io.EOF {
 			return err
@@ -40,14 +43,22 @@ func (y *Encoder) EncodeFile(fh *os.File, output io.Writer) error {
 	}
 	close(workqueue)
 
-	for result := range results {
+	ctx.Done()
+	if writeerror != nil {
+		return writeerror
+	}
+	
+	return nil
+}
+
+func resultWriter(ctx context.Context, w io.Writer, results chan chan byte, done context.CancelFunc) error {
+	defer done()
+	for result := range results { //TODO: close when done
 		var buf []byte
-		i := 0
 		for b := range result {
-			buf[i] = b
-			i++
+			buf = append(buf, b)
 		}
-		_, err := output.Write(buf)
+		_, err := w.Write(buf)
 		if err != nil {
 			return err
 		}
