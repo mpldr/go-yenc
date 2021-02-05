@@ -16,7 +16,7 @@ func (y *Encoder) EncodeFile(fh *os.File, output io.Writer) error {
 	// TODO: make it dynamic
 	workercount := 16
 
-	workqueue := make(chan [2]chan byte, workercount*2)
+	workqueue := make(chan chan byte, workercount*2)
 	results := make(chan chan byte, workercount*2)
 	for i := 0; i < workercount; i++ {
 		go encodeWorker(ctx, workqueue, results)
@@ -24,7 +24,6 @@ func (y *Encoder) EncodeFile(fh *os.File, output io.Writer) error {
 
 	for {
 		inchan := make(chan byte, BUFFERSIZE)
-		outchan := make(chan byte, BUFFERSIZE*2)
 		bytecount, err := bufrd.Read(buf)
 		if err != nil && err != io.EOF {
 			return err
@@ -34,11 +33,12 @@ func (y *Encoder) EncodeFile(fh *os.File, output io.Writer) error {
 			inchan <- buf[i]
 		}
 		close(inchan)
-		workqueue <- [2]chan byte{inchan, outchan}
+		workqueue <- inchan
 		if err == io.EOF {
 			break
 		}
 	}
+	close(workqueue)
 
 	for result := range results {
 		var buf []byte
@@ -55,16 +55,18 @@ func (y *Encoder) EncodeFile(fh *os.File, output io.Writer) error {
 	return nil
 }
 
-func encodeWorker(ctx context.Context, input chan [2]chan byte, output chan chan byte) {
+func encodeWorker(ctx context.Context, input chan chan byte, output chan chan byte) {
 	for job := range input {
-		for bte := range job[0] {
+		outchan := make(chan byte, BUFFERSIZE*2)
+		for bte := range job {
 			b, e := YEnc(bte)
 			if e {
-				job[1] <- '='
+				outchan <- '='
 			}
-			job[1] <- b
+			outchan <- b
 		}
-		close(job[1])
+		close(outchan)
+		output <- outchan
 	}
 }
 
