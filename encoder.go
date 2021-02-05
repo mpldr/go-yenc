@@ -14,20 +14,16 @@ func (y *Encoder) EncodeFile(fh *os.File, output io.Writer) error {
 	var buf []byte
 
 	// TODO: make it dynamic
-	workercount := 1
+	workercount := 16
 
-	workqueue := make(chan [2]chan byte, workercount*2)
+	workqueue := make(chan chan byte, workercount*2)
 	results := make(chan chan byte, workercount*2)
 	for i := 0; i < workercount; i++ {
-		go encodeWorker(ctx, workqueue)
+		go encodeWorker(ctx, workqueue, results)
 	}
-	var writeerror error
-	writingFinished := make(chan bool)
-	go func() {err := resultWriter(ctx, output, results, cancel); writeerror = err; writingFinished <- true}()
 
 	for {
 		inchan := make(chan byte, BUFFERSIZE)
-		outchan := make(chan byte, BUFFERSIZE)
 		bytecount, err := bufrd.Read(buf)
 		if err != nil && err != io.EOF {
 			return err
@@ -37,30 +33,21 @@ func (y *Encoder) EncodeFile(fh *os.File, output io.Writer) error {
 			inchan <- buf[i]
 		}
 		close(inchan)
-		workqueue <- [2]chan byte{inchan, outchan}
-		results <- outchan
-		if err == io.EOF || bytecount <1 {
+		workqueue <- inchan
+		if err == io.EOF {
 			break
 		}
 	}
 	close(workqueue)
-	close(results)
 
-	<-writingFinished
-	if writeerror != nil {
-		return writeerror
-	}
-	
-	return nil
-}
-
-func resultWriter(ctx context.Context, w io.Writer, results chan chan byte, done context.CancelFunc) error {
-	for result := range results { //TODO: close when done
+	for result := range results {
 		var buf []byte
+		i := 0
 		for b := range result {
-			buf = append(buf, b)
+			buf[i] = b
+			i++
 		}
-		_, err := w.Write(buf)
+		_, err := output.Write(buf)
 		if err != nil {
 			return err
 		}
@@ -68,16 +55,18 @@ func resultWriter(ctx context.Context, w io.Writer, results chan chan byte, done
 	return nil
 }
 
-func encodeWorker(ctx context.Context, input chan [2]chan byte) {
+func encodeWorker(ctx context.Context, input chan chan byte, output chan chan byte) {
 	for job := range input {
-		for bte := range job[0] {
+		outchan := make(chan byte, BUFFERSIZE*2)
+		for bte := range job {
 			b, e := YEnc(bte)
 			if e {
-				job[1] <- '='
+				outchan <- '='
 			}
-			job[1] <- b
+			outchan <- b
 		}
-		close(job[1])
+		close(outchan)
+		output <- outchan
 	}
 }
 
