@@ -16,13 +16,14 @@ func (y *Encoder) EncodeFile(fh *os.File, output io.Writer) error {
 	// TODO: make it dynamic
 	workercount := 1
 
-	workqueue := make(chan chan byte, workercount*2)
+	workqueue := make(chan [2]chan byte, workercount*2)
 	results := make(chan chan byte, workercount*2)
 	for i := 0; i < workercount; i++ {
-		go encodeWorker(ctx, workqueue, results)
+		go encodeWorker(ctx, workqueue)
 	}
 	var writeerror error
-	go func() {err := resultWriter(ctx, output, results, cancel); writeerror = err}()
+	writingFinished := make(chan bool)
+	go func() {err := resultWriter(ctx, output, results, cancel); writeerror = err; writingFinished <- true}()
 
 	for {
 		inchan := make(chan byte, BUFFERSIZE)
@@ -36,14 +37,16 @@ func (y *Encoder) EncodeFile(fh *os.File, output io.Writer) error {
 			inchan <- buf[i]
 		}
 		close(inchan)
-		workqueue <- inchan
-		if err == io.EOF {
+		workqueue <- [2]chan byte{inchan, outchan}
+		results <- outchan
+		if err == io.EOF || bytecount <1 {
 			break
 		}
 	}
 	close(workqueue)
+	close(results)
 
-	ctx.Done()
+	<-writingFinished
 	if writeerror != nil {
 		return writeerror
 	}
@@ -52,7 +55,6 @@ func (y *Encoder) EncodeFile(fh *os.File, output io.Writer) error {
 }
 
 func resultWriter(ctx context.Context, w io.Writer, results chan chan byte, done context.CancelFunc) error {
-	defer done()
 	for result := range results { //TODO: close when done
 		var buf []byte
 		for b := range result {
@@ -66,18 +68,16 @@ func resultWriter(ctx context.Context, w io.Writer, results chan chan byte, done
 	return nil
 }
 
-func encodeWorker(ctx context.Context, input chan chan byte, output chan chan byte) {
+func encodeWorker(ctx context.Context, input chan [2]chan byte) {
 	for job := range input {
-		outchan := make(chan byte, BUFFERSIZE*2)
-		for bte := range job {
+		for bte := range job[0] {
 			b, e := YEnc(bte)
 			if e {
-				outchan <- '='
+				job[1] <- '='
 			}
-			outchan <- b
+			job[1] <- b
 		}
-		close(outchan)
-		output <- outchan
+		close(job[1])
 	}
 }
 
