@@ -58,3 +58,37 @@ func BenchmarkEncodingEscape(b *testing.B) {
 		})
 	}
 }
+
+func BenchmarkEncoding8Byte(b *testing.B) {
+	indata := [8]byte{5, 5, 5, 5, 5, 5, 5, 5}
+	encoder := []struct {
+		name string
+		fn   func(byte) (byte, bool)
+	}{
+		{"naive", YEnc},
+		{"lookup-table", YEncLT},
+	}
+	for _, enc := range encoder {
+		b.Run(enc.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				for j := 0; j < 8; j++ {
+					_, _ = enc.fn(indata[j])
+				}
+			}
+		})
+	}
+
+	multiencoder := []struct {
+		name string
+		fn   func([8]byte) []byte
+	}{
+		{"bootleg-simd", YencBootlegSIMD},
+	}
+	for _, enc := range multiencoder {
+		b.Run(enc.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				_ = enc.fn(indata)
+			}
+		})
+	}
+}
