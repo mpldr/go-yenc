@@ -25,8 +25,9 @@ completed pretty quick.
 
 | Algorithm    | ns/Op Escaped | ns/Op Unescaped | ns/Op (exp. avg.)¹ | *n*th fastest |
 |--------------|---------------|-----------------|--------------------|---------------|
-| naive        | 2.46          | 2.43            | 2.43               | 1             |
-| lookup-table | 2.55          | 2.55            | 2.55               | 2             |
+| naive        | 2.53          | 2.51            | 2.51               | 1             |
+| lookup-table | 2.61          | 2.61            | 2.61               | 2             |
+| bootleg-simd | 13.95         | 8.48            | 8.57               | 3             |
 
 ¹) assuming random distribution of bytes and that 4/256 bytes have to be escaped.
 
