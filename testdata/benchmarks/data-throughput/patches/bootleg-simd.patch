@@ -1,40 +1,82 @@
 diff --git a/testdata/benchmarks/data-throughput/main.go b/testdata/benchmarks/data-throughput/main.go
-index d7a48cf..59ed581 100644
+index 88d2dfd..dd7eaab 100644
 --- a/testdata/benchmarks/data-throughput/main.go
 +++ b/testdata/benchmarks/data-throughput/main.go
-@@ -1,13 +1,33 @@
- package main
- 
- import (
-+	"bufio"
-+	"bytes"
- 	"fmt"
- 
- 	yenc "git.sr.ht/~poldi1405/go-yenc/testdata/benchmarks"
+@@ -9,23 +9,25 @@ import (
  )
  
  func main() {
--	for i := 0; i < len(indata); i++ {
--		fmt.Print(yenc.YEnc(indata[i]))
+-	var b byte
+-	var e bool
 +	var buf [8]byte
 +	var index int
-+
-+	reader := bufio.NewReader(bytes.NewReader(indata))
-+	var eof bool
-+	var err error
-+
-+	for !eof {
+ 
+ 	reader := bufio.NewReader(bytes.NewReader(indata))
+ 	var eof bool
+ 	var err error
+ 
+ 	for !eof {
+-		b, err = reader.ReadByte()
 +		buf[index], err = reader.ReadByte()
-+		if err != nil {
-+			eof = true
-+		}
-+
+ 		if err != nil {
+ 			eof = true
+ 		}
+ 
+-		b, e = yenc.YEnc(b)
+-		if e {
+-			fmt.Print('=')
 +		index++
 +		if index == 8 || eof {
 +			bytes := yenc.YEncBootlegSIMD(buf)
 +
-+			fmt.Print(bytes)
++			fmt.Printf("%s", bytes)
 +			index = 0
-+		}
+ 		}
+-		fmt.Print(b)
  	}
  }
+diff --git a/testdata/benchmarks/data-throughput/patches/bootleg-simd.patch b/testdata/benchmarks/data-throughput/patches/bootleg-simd.patch
+index 2c3ef65..e69de29 100644
+--- a/testdata/benchmarks/data-throughput/patches/bootleg-simd.patch
++++ b/testdata/benchmarks/data-throughput/patches/bootleg-simd.patch
+@@ -1,40 +0,0 @@
+-diff --git a/testdata/benchmarks/data-throughput/main.go b/testdata/benchmarks/data-throughput/main.go
+-index d7a48cf..59ed581 100644
+---- a/testdata/benchmarks/data-throughput/main.go
+-+++ b/testdata/benchmarks/data-throughput/main.go
+-@@ -1,13 +1,33 @@
+- package main
+- 
+- import (
+-+	"bufio"
+-+	"bytes"
+- 	"fmt"
+- 
+- 	yenc "git.sr.ht/~poldi1405/go-yenc/testdata/benchmarks"
+- )
+- 
+- func main() {
+--	for i := 0; i < len(indata); i++ {
+--		fmt.Print(yenc.YEnc(indata[i]))
+-+	var buf [8]byte
+-+	var index int
+-+
+-+	reader := bufio.NewReader(bytes.NewReader(indata))
+-+	var eof bool
+-+	var err error
+-+
+-+	for !eof {
+-+		buf[index], err = reader.ReadByte()
+-+		if err != nil {
+-+			eof = true
+-+		}
+-+
+-+		index++
+-+		if index == 8 || eof {
+-+			bytes := yenc.YEncBootlegSIMD(buf)
+-+
+-+			fmt.Print(bytes)
+-+			index = 0
+-+		}
+- 	}
+- }
