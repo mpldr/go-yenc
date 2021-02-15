@@ -20,7 +20,7 @@ func YEncLT(input byte) (byte, bool) {
 	return inp.bte, inp.esc
 }
 
-func YencBootlegSIMD(input [8]byte) []byte {
+func YEncBootlegSIMD(input [8]byte) []byte {
 	var mask [8]bool
 
 	// add 42 (0x2a) to every byte
