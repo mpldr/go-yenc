@@ -1,0 +1,10 @@
+image: archlinux
+packages:
+  - go
+sources:
+  - https://git.sr.ht/~poldi1405/go-yenc
+tasks:
+  - setup: |
+      cd go-yenc
+      git switch lookup-table
+      go test -v -cover .

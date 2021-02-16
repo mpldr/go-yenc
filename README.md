@@ -9,3 +9,9 @@ The current objective is a throughput of at least 10 MiB/s without causing a
 CPU-Meltdown or stealing too much RAM from Chrome.
 
 Current Speed: 2.65 MiB/s
+
+## License
+
+The code is Licensed under the MPL 2.0
+
+Copyright (c) 2020 Moritz Poldrack
