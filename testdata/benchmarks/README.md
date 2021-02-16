@@ -44,12 +44,12 @@ completed pretty quick.
 Data Throughput is calculated by running the encoding function on a set of
 randomly generated data which is compiled into the program.
 
-| Algorithm    | Duration | Byte      | Throughput    | *n*th fastest | Speed relative to naive |
-|--------------|----------|-----------|---------------|---------------|-------------------------|
-| naive        |  0.9828  | 268435456 |  260.48 MiB/s | 2             | 1.00                    |
-| lookup-table |  0.8363  | 268435456 |  306.11 MiB/s | 1             | 1.18                    |
-| hashmap      |  8.828   | 268435456 | 28.9986 MiB/s | 4             | 0.11                    |
-| bootleg-simd |  4.647   | 268435456 | 55.0893 MiB/s | 3             | 0.21                    |
+| Algorithm    | Duration | Byte       | Throughput    | *n*th fastest | Speed relative to naive |
+|--------------|----------|------------|---------------|---------------|-------------------------|
+| naive        |  3.933   | 1073741824 |  260.36 MiB/s | 2             | 1.00                    |
+| lookup-table |  3.300   | 1073741824 |  310.30 MiB/s | 1             | 1.19                    |
+| hashmap      |  35.236  | 1073741824 | 29.0612 MiB/s | 4             | 0.11                    |
+| bootleg-simd |  19.144  | 1073741824 | 53.4893 MiB/s | 3             | 0.21                    |
 
 <!--
 There was an extreme improvement by removing the fmt.Print() statements. This
