@@ -11,6 +11,7 @@ func TestEncoding(t *testing.T) {
 	}{
 		{"naive", YEnc},
 		{"lookup-table", YEncLT},
+		{"hashmap", YEncHashmap},
 	}
 	for _, enc := range encoder {
 		t.Run(enc.name, func(t *testing.T) {
@@ -61,6 +62,7 @@ func BenchmarkEncoding(b *testing.B) {
 	}{
 		{"naive", YEnc},
 		{"lookup-table", YEncLT},
+		{"hashmap", YEncHashmap},
 	}
 	for _, enc := range encoder {
 		b.Run(enc.name, func(b *testing.B) {
@@ -83,6 +85,7 @@ func BenchmarkEncodingEscape(b *testing.B) {
 	}{
 		{"naive", YEnc},
 		{"lookup-table", YEncLT},
+		{"hashmap", YEncHashmap},
 	}
 	for _, enc := range encoder {
 		b.Run(enc.name, func(b *testing.B) {
@@ -101,6 +104,7 @@ func BenchmarkEncoding8Byte(b *testing.B) {
 	}{
 		{"naive", YEnc},
 		{"lookup-table", YEncLT},
+		{"hashmap", YEncHashmap},
 	}
 	for _, enc := range encoder {
 		b.Run(enc.name, func(b *testing.B) {
@@ -135,6 +139,7 @@ func BenchmarkEncoding8ByteEscaped(b *testing.B) {
 	}{
 		{"naive", YEnc},
 		{"lookup-table", YEncLT},
+		{"hashmap", YEncHashmap},
 	}
 	for _, enc := range encoder {
 		b.Run(enc.name, func(b *testing.B) {
