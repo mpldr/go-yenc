@@ -51,6 +51,9 @@ randomly generated data which is compiled into the program.
 | hashmap      | 107.275  | 268435456 | 2.38639 MiB/s | 4             | 0.87                    |
 | bootleg-simd |  29.984  | 268435456 | 8.53789 MiB/s | 1             | 3.12                    |
 
+Variations in speed may be due to changes in the input dataset and fluctuations
+in computer activity.
+
 ## additional notes
 
 To ensure maximum comparability, all fields are updated every time the benchmark
