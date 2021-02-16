@@ -10,9 +10,14 @@ categories are: raw speed and data throughput.
 
 - naive implementation
 - Lookup Table
-- SIMD (not yet implemented)
+	- Slice containing struct
+	- Hashmap with byte-key
 - Bootleg SIMD (do it with a 32/64-bit integer and split it up)
-- Bitwise Operations (not yet implemented)
+
+### not yet participating
+
+- Bitwise Operations
+- SIMD
 - `io.Writer` implementation
 
 ## Raw Speed
@@ -40,9 +45,9 @@ randomly generated data which is compiled into the program.
 
 | Algorithm    | Duration | Byte      | Throughput    | *n*th fastest | Speed relative to naive |
 |--------------|----------|-----------|---------------|---------------|-------------------------|
-| naive        |  91.631  | 268435456 | 2.79381 MiB/s | 3             | 1.00 ± 0.00 times       |
-| lookup-table |  89.875  | 268435456 | 2.84840 MiB/s | 2             | 1.01 ± 0.01 times       |
-| bootleg-simd |  29.931  | 268435456 | 8.55301 MiB/s | 1             | 3.06 ± 0.01 times       |
+| naive        |  89.778  | 268435456 | 2.85148 MiB/s | 3             | 1.00                    |
+| lookup-table |  88.559  | 268435456 | 2.89073 MiB/s | 2             | 1.01                    |
+| bootleg-simd |  30.690  | 268435456 | 8.34148 MiB/s | 1             | 2.93                    |
 
 // TODO: Try if using bufio in naive and LT levels the playingfield. Until then
 // Bootleg-SIMD is the winner
