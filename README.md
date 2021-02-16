@@ -8,4 +8,4 @@ A yenc encoder/decoder who wants to be the fastest. (except yencode) (see
 The current objective is a throughput of at least 10 MiB/s without causing a
 CPU-Meltdown or stealing too much RAM from Chrome.
 
-[current_speed=](https://img.shields.io/badge/current_speed-2.64_MiB%2Fs-red)
+[current_speed=8.34MiB](https://img.shields.io/badge/current_speed-8.34_MiB%2Fs-yellow)
