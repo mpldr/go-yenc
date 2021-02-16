@@ -15,6 +15,11 @@ func YEnc(input byte) (byte, bool) {
 	return input, escape
 }
 
+func YEncHashmap(input byte) (byte, bool) {
+	inp := hashmap[input]
+	return inp.bte, inp.esc
+}
+
 func YEncLT(input byte) (byte, bool) {
 	inp := lookupTable[int(input)]
 	return inp.bte, inp.esc
