@@ -1,29 +1,13 @@
-diff --git a/testdata/benchmarks/README.md b/testdata/benchmarks/README.md
-index 46d8ca9..6928a64 100644
---- a/testdata/benchmarks/README.md
-+++ b/testdata/benchmarks/README.md
-@@ -30,8 +30,9 @@ completed pretty quick.
- 
- | Algorithm    | ns/Op Escaped | ns/Op Unescaped | ns/Op (exp. avg.)¹ | *n*th fastest |
- |--------------|---------------|-----------------|--------------------|---------------|
--| naive        | 2.53          | 2.51            | 2.51               | 1             |
--| lookup-table | 2.61          | 2.61            | 2.61               | 2             |
-+| naive        | 2.40          | 2.39            | 2.39               | 1             |
-+| lookup-table | 2.51          | 2.51            | 2.51               | 2             |
-+| hashmap      | 21.05         | 20.99           | 20.99              | 4
- | bootleg-simd | 13.95         | 8.48            | 8.57               | 3             |
- 
- ¹) assuming random distribution of bytes and that 4/256 bytes have to be escaped.
 diff --git a/testdata/benchmarks/data-throughput/main.go b/testdata/benchmarks/data-throughput/main.go
-index 88d2dfd..a835c61 100644
+index a26702c..4c429ff 100644
 --- a/testdata/benchmarks/data-throughput/main.go
 +++ b/testdata/benchmarks/data-throughput/main.go
-@@ -22,7 +22,7 @@ func main() {
+@@ -21,7 +21,7 @@ func main() {
  			eof = true
  		}
  
 -		b, e = yenc.YEnc(b)
 +		b, e = yenc.YEncHashmap(b)
  		if e {
- 			fmt.Print('=')
+ 			_ = e
  		}

@@ -46,10 +46,15 @@ randomly generated data which is compiled into the program.
 
 | Algorithm    | Duration | Byte      | Throughput    | *n*th fastest | Speed relative to naive |
 |--------------|----------|-----------|---------------|---------------|-------------------------|
-| naive        |  93.583  | 268435456 | 2.73554 MiB/s | 3             | 1.00                    |
-| lookup-table |  93.425  | 268435456 | 2.74017 MiB/s | 2             | 1.00                    |
-| hashmap      | 107.275  | 268435456 | 2.38639 MiB/s | 4             | 0.87                    |
-| bootleg-simd |  29.984  | 268435456 | 8.53789 MiB/s | 1             | 3.12                    |
+| naive        |  0.9828  | 268435456 |  260.48 MiB/s | 2             | 1.00                    |
+| lookup-table |  0.8363  | 268435456 |  306.11 MiB/s | 1             | 1.18                    |
+| hashmap      |  8.828   | 268435456 | 28.9986 MiB/s | 4             | 0.11                    |
+| bootleg-simd |  4.647   | 268435456 | 55.0893 MiB/s | 3             | 0.21                    |
+
+<!--
+There was an extreme improvement by removing the fmt.Print() statements. This
+also lead to a new ranking and we have definitely met the 10 MiB/s
+-->
 
 Variations in speed may be due to changes in the input dataset and fluctuations
 in computer activity.

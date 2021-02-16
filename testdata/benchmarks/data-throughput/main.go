@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 
 	yenc "git.sr.ht/~poldi1405/go-yenc/testdata/benchmarks"
 )
@@ -24,8 +23,8 @@ func main() {
 
 		b, e = yenc.YEnc(b)
 		if e {
-			fmt.Print('=')
+			_ = e
 		}
-		fmt.Print(b)
+		_ = e
 	}
 }
