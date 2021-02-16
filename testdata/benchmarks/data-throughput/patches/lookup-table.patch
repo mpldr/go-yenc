@@ -1,12 +1,13 @@
 diff --git a/testdata/benchmarks/data-throughput/main.go b/testdata/benchmarks/data-throughput/main.go
-index d7a48cf..1210f72 100644
+index 88d2dfd..55d2566 100644
 --- a/testdata/benchmarks/data-throughput/main.go
 +++ b/testdata/benchmarks/data-throughput/main.go
-@@ -8,6 +8,6 @@ import (
+@@ -22,7 +22,7 @@ func main() {
+ 			eof = true
+ 		}
  
- func main() {
- 	for i := 0; i < len(indata); i++ {
--		fmt.Print(yenc.YEnc(indata[i]))
-+		fmt.Print(yenc.YEncLT(indata[i]))
- 	}
- }
+-		b, e = yenc.YEnc(b)
++		b, e = yenc.YEncLT(b)
+ 		if e {
+ 			fmt.Print('=')
+ 		}

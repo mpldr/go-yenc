@@ -1,0 +1,39 @@
+diff --git a/testdata/benchmarks/data-throughput/main.go b/testdata/benchmarks/data-throughput/main.go
+index 88d2dfd..573a234 100644
+--- a/testdata/benchmarks/data-throughput/main.go
++++ b/testdata/benchmarks/data-throughput/main.go
+@@ -9,23 +9,27 @@ import (
+ )
+ 
+ func main() {
+-	var b byte
+-	var e bool
++	var buf [8]byte
++
++	var index int
+ 
+ 	reader := bufio.NewReader(bytes.NewReader(indata))
+ 	var eof bool
+ 	var err error
+ 
+ 	for !eof {
+-		b, err = reader.ReadByte()
++		buf[index], err = reader.ReadByte()
+ 		if err != nil {
+ 			eof = true
+ 		}
+ 
+-		b, e = yenc.YEnc(b)
+-		if e {
+-			fmt.Print('=')
++		index++
++
++		if index == 8 || eof {
++			bytes := yenc.YEncBootlegSIMD(buf)
++
++			fmt.Print(bytes)
++			index = 0
+ 		}
+-		fmt.Print(b)
+ 	}
+ }
