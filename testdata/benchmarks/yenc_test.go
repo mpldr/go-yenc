@@ -165,3 +165,102 @@ func BenchmarkEncoding8ByteEscaped(b *testing.B) {
 		})
 	}
 }
+
+func BenchmarkEncoding16Byte(b *testing.B) {
+	indata := [16]byte{5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5}
+	encoder := []struct {
+		name string
+		fn   func(byte) (byte, bool)
+	}{
+		{"naive", YEnc},
+		{"lookup-table", YEncLT},
+		{"hashmap", YEncHashmap},
+	}
+	for _, enc := range encoder {
+		b.Run(enc.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				for j := 0; j < 16; j++ {
+					_, _ = enc.fn(5)
+				}
+			}
+		})
+	}
+
+	multiencoder := []struct {
+		name string
+		fn   func([8]byte) []byte
+	}{
+		{"bootleg-simd", YEncBootlegSIMD},
+	}
+	for _, enc := range multiencoder {
+		b.Run(enc.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				_ = enc.fn([8]byte{5, 5, 5, 5, 5, 5, 5, 5})
+				_ = enc.fn([8]byte{5, 5, 5, 5, 5, 5, 5, 5})
+			}
+		})
+	}
+
+	simdEncoder := []struct {
+		name string
+		fn   func([16]byte) []byte
+	}{
+		{"simd", YEncSIMD},
+	}
+	for _, enc := range simdEncoder {
+		b.Run(enc.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				_ = enc.fn(indata)
+			}
+		})
+	}
+}
+
+func BenchmarkEncoding16ByteEscaped(b *testing.B) {
+	indata := [16]byte{19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19}
+	encoder := []struct {
+		name string
+		fn   func(byte) (byte, bool)
+	}{
+		{"naive", YEnc},
+		{"lookup-table", YEncLT},
+		{"hashmap", YEncHashmap},
+	}
+	for _, enc := range encoder {
+		b.Run(enc.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				for j := 0; j < 16; j++ {
+					_, _ = enc.fn(indata[j])
+				}
+			}
+		})
+	}
+
+	multiencoder := []struct {
+		name string
+		fn   func([8]byte) []byte
+	}{
+		{"bootleg-simd", YEncBootlegSIMD},
+	}
+	for _, enc := range multiencoder {
+		b.Run(enc.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				_ = enc.fn([8]byte{19, 19, 19, 19, 19, 19, 19, 19})
+			}
+		})
+	}
+
+	simdEncoder := []struct {
+		name string
+		fn   func([16]byte) []byte
+	}{
+		{"simd", YEncSIMD},
+	}
+	for _, enc := range simdEncoder {
+		b.Run(enc.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				_ = enc.fn(indata)
+			}
+		})
+	}
+}
