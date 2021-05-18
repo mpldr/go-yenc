@@ -1,0 +1,37 @@
+diff --git a/testdata/benchmarks/data-throughput/main.go b/testdata/benchmarks/data-throughput/main.go
+index bdedaec..f896818 100644
+--- a/testdata/benchmarks/data-throughput/main.go
++++ b/testdata/benchmarks/data-throughput/main.go
+@@ -8,8 +8,8 @@ import (
+ )
+ 
+ func main() {
+-	var b byte
+-	var e bool
++	var buf [16]byte
++	var index int
+ 
+ 	infile, err := os.Open("indata.dat")
+ 	if err != nil {
+@@ -28,16 +28,16 @@ func main() {
+ 	var eof bool
+ 
+ 	for !eof {
+-		b, err = reader.ReadByte()
++		buf[index], err = reader.ReadByte()
+ 		if err != nil {
+ 			eof = true
+ 		}
+ 
+-		b, e = yenc.YEnc(b)
+-		if e {
+-			writer.Write([]byte{0x3D})
++		if index == 16 || eof {
++			bytes := yenc.YEncSIMD(buf)
++			_, _ = writer.Write(bytes)
++			index = 0
+ 		}
+-		writer.Write([]byte{b})
+ 	}
+ 	writer.Flush()
+ }
