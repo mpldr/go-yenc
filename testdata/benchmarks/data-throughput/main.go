@@ -39,4 +39,5 @@ func main() {
 		}
 		writer.Write([]byte{b})
 	}
+	writer.Flush()
 }

@@ -33,4 +33,5 @@ index 5713d01..a40e5ab 100644
  		}
 -		writer.Write([]byte{b})
  	}
+	writer.Flush()
  }
