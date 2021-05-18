@@ -1,8 +1,8 @@
 diff --git a/testdata/benchmarks/data-throughput/main.go b/testdata/benchmarks/data-throughput/main.go
-index a26702c..abec50b 100644
+index 5713d01..a40e5ab 100644
 --- a/testdata/benchmarks/data-throughput/main.go
 +++ b/testdata/benchmarks/data-throughput/main.go
-@@ -8,23 +8,25 @@ import (
+@@ -8,8 +8,8 @@ import (
  )
  
  func main() {
@@ -11,9 +11,10 @@ index a26702c..abec50b 100644
 +	var buf [8]byte
 +	var index int
  
- 	reader := bufio.NewReader(bytes.NewReader(indata))
+ 	infile, err := os.Open("indata.dat")
+ 	if err != nil {
+@@ -28,15 +28,15 @@ func main() {
  	var eof bool
- 	var err error
  
  	for !eof {
 -		b, err = reader.ReadByte()
@@ -24,14 +25,12 @@ index a26702c..abec50b 100644
  
 -		b, e = yenc.YEnc(b)
 -		if e {
--			_ = e
-+		index++
+-			writer.Write([]byte{0x3D})
 +		if index == 8 || eof {
 +			bytes := yenc.YEncBootlegSIMD(buf)
-+
-+			_ = bytes
++			_, _ = writer.Write(bytes)
 +			index = 0
  		}
--		_ = e
+-		writer.Write([]byte{b})
  	}
  }

@@ -1,13 +1,13 @@
 diff --git a/testdata/benchmarks/data-throughput/main.go b/testdata/benchmarks/data-throughput/main.go
-index a26702c..4c429ff 100644
+index 5713d01..f4ad3b4 100644
 --- a/testdata/benchmarks/data-throughput/main.go
 +++ b/testdata/benchmarks/data-throughput/main.go
-@@ -21,7 +21,7 @@ func main() {
+@@ -33,7 +33,7 @@ func main() {
  			eof = true
  		}
  
 -		b, e = yenc.YEnc(b)
 +		b, e = yenc.YEncHashmap(b)
  		if e {
- 			_ = e
+ 			writer.Write([]byte{0x3D})
  		}
