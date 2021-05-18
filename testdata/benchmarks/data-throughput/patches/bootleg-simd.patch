@@ -1,5 +1,5 @@
 diff --git a/testdata/benchmarks/data-throughput/main.go b/testdata/benchmarks/data-throughput/main.go
-index 5713d01..a40e5ab 100644
+index bdedaec..9ac5ea1 100644
 --- a/testdata/benchmarks/data-throughput/main.go
 +++ b/testdata/benchmarks/data-throughput/main.go
 @@ -8,8 +8,8 @@ import (
@@ -13,7 +13,7 @@ index 5713d01..a40e5ab 100644
  
  	infile, err := os.Open("indata.dat")
  	if err != nil {
-@@ -28,15 +28,15 @@ func main() {
+@@ -28,16 +28,16 @@ func main() {
  	var eof bool
  
  	for !eof {
@@ -33,5 +33,5 @@ index 5713d01..a40e5ab 100644
  		}
 -		writer.Write([]byte{b})
  	}
-	writer.Flush()
+ 	writer.Flush()
  }
