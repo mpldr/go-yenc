@@ -28,12 +28,14 @@ Raw speed is calculated by running the benchmark 100 times and taking the
 average. This is done to account for variations in CPU Usage as this test is
 completed pretty quick.
 
-| Algorithm    | ns/Op Escaped | ns/Op Unescaped | ns/Op (exp. avg.)¹ | *n*th fastest |
-|--------------|---------------|-----------------|--------------------|---------------|
-| naive        | 2.40          | 2.39            | 2.39               | 1             |
-| lookup-table | 2.51          | 2.51            | 2.51               | 2             |
-| hashmap      | 21.05         | 20.99           | 20.99              | 4
-| bootleg-simd | 13.95         | 8.48            | 8.57               | 3             |
+| Algorithm     | ns/Op Escaped | ns/Op Unescaped | ns/Op (exp. avg.)¹ | *n*th fastest |
+|---------------|---------------|-----------------|--------------------|---------------|
+| naive         | 2.42          | 2.28            | 2.28               | 2             |
+| naive-pointer | 22.72         | 22.70           | 22.72              | 6             |
+| lookup-table  | 2.20          | 2.20            | 2.20               | 1             |
+| hashmap       | 20.01         | 19.69           | 19.70              | 5             |
+| bootleg-simd  | 16.49         | 10.52           | 10.62              | 3             |
+| simd          | 15.42         | 11.83           | 11.77              | 4             |
 
 ¹) assuming random distribution of bytes and that 4/256 bytes have to be escaped.
 
@@ -42,18 +44,21 @@ completed pretty quick.
 `[data-throughput/benchmark.sh]`
 
 Data Throughput is calculated by running the encoding function on a set of
-randomly generated data which is compiled into the program.
+randomly generated data which is written to a file. This operation is performed
+on a ramdisk to get raw numbers.
 
-| Algorithm    | Duration | Byte       | Throughput    | *n*th fastest | Speed relative to naive |
-|--------------|----------|------------|---------------|---------------|-------------------------|
-| naive        |  3.933   | 1073741824 |  260.36 MiB/s | 2             | 1.00                    |
-| lookup-table |  3.300   | 1073741824 |  310.30 MiB/s | 1             | 1.19                    |
-| hashmap      |  35.236  | 1073741824 | 29.0612 MiB/s | 4             | 0.11                    |
-| bootleg-simd |  19.144  | 1073741824 | 53.4893 MiB/s | 3             | 0.21                    |
+| Algorithm     | Duration | Byte       | Throughput    | *n*th fastest | Speed relative to naive |
+|---------------|----------|------------|---------------|---------------|-------------------------|
+| naive         |  30.516  | 1073741824 | 33.5562 MiB/s | 3             | 1.00                    |
+| naive-pointer |  30.752  | 1073741824 | 33.2986 MiB/s | 5             | 0.99                    |
+| lookup-table  |  30.569  | 1073741824 |  33.498 MiB/s | 4             | 1.00                    |
+| hashmap       |  63.524  | 1073741824 | 16.1199 MiB/s | 6             | 0.48                    |
+| bootleg-simd  |   4.310  | 1073741824 | 237.587 MiB/s | 1             | 7.08                    |
+| simd          |   4.314  | 1073741824 | 237.367 MiB/s | 2             | 7.07                    |
 
 <!--
-There was an extreme improvement by removing the fmt.Print() statements. This
-also lead to a new ranking and we have definitely met the 10 MiB/s
+No idea why SIMD changes from coming out almost last to placing first. I'm not
+complaining, but I am confused.
 -->
 
 Variations in speed may be due to changes in the input dataset and fluctuations
