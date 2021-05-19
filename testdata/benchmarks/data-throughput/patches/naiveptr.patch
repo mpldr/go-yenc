@@ -1,0 +1,37 @@
+diff --git a/testdata/benchmarks/data-throughput/main.go b/testdata/benchmarks/data-throughput/main.go
+index bdedaec..fb647ca 100644
+--- a/testdata/benchmarks/data-throughput/main.go
++++ b/testdata/benchmarks/data-throughput/main.go
+@@ -9,7 +9,6 @@ import (
+ 
+ func main() {
+ 	var b byte
+-	var e bool
+ 
+ 	infile, err := os.Open("indata.dat")
+ 	if err != nil {
+@@ -26,18 +25,20 @@ func main() {
+ 	reader := bufio.NewReader(infile)
+ 	writer := bufio.NewWriter(outfile)
+ 	var eof bool
++	var bts [2]byte
+ 
+ 	for !eof {
+ 		b, err = reader.ReadByte()
+ 		if err != nil {
+ 			eof = true
+ 		}
++		bts = [2]byte{0, b}
+ 
+-		b, e = yenc.YEnc(b)
+-		if e {
+-			writer.Write([]byte{0x3D})
++		yenc.YEncPtr(&bts)
++		if bts[0] != 0 {
++			writer.Write([]byte{bts[0]})
+ 		}
+-		writer.Write([]byte{b})
++		writer.Write([]byte{bts[1]})
+ 	}
+ 	writer.Flush()
+ }
