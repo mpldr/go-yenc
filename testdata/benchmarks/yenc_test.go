@@ -29,7 +29,7 @@ func TestEncoding(t *testing.T) {
 		fn   func(*[2]byte)
 	}{
 		{"naive-pointer", YEncPtr},
-		{"cgo", CYEnc},
+		//		{"cgo", CYEnc},
 	}
 	for _, enc := range encoderPtr {
 		t.Run(enc.name, func(t *testing.T) {
@@ -46,13 +46,13 @@ func TestEncoding(t *testing.T) {
 }
 
 func TestEncodingMultibyte(t *testing.T) {
-	encoder := []struct {
+	encoder8byte := []struct {
 		name string
 		fn   func([8]byte) []byte
 	}{
 		{"bootleg-simd", YEncBootlegSIMD},
 	}
-	for _, enc := range encoder {
+	for _, enc := range encoder8byte {
 		t.Run(enc.name, func(t *testing.T) {
 			var input [8]byte
 			for i := 0; i < 256; i++ {
@@ -61,12 +61,61 @@ func TestEncodingMultibyte(t *testing.T) {
 
 				if index == 7 {
 					for j := 0; j < 8; j++ {
-						// TODO: add test
-						_ = enc.fn([8]byte{5, 19, 0, 20, 18, 128, 64})
-						/*if b != lookupTable[i].bte || esc != lookupTable[i].esc {
-							t.Logf("Encoding of %x returned %x but %x was expected", i, b, lookupTable[i].bte)
-							t.Fail()
-						}*/
+						demo := [8]byte{5, 19, 0, 20, 18, 128, 64}
+						res := enc.fn(demo)
+						var index int
+						for i := 0; i < len(demo); i++ {
+							if lookupTable[demo[i]].esc {
+								if res[index] != 0x3D {
+									t.Logf("Encoding of %x did not escape", demo[i])
+									t.Fail()
+								}
+								index++
+							}
+							if res[index] != lookupTable[demo[i]].bte {
+								t.Logf("Encoding of %x returned %x but %x was expected", demo[i], res[index], lookupTable[demo[i]].bte)
+								t.Fail()
+							}
+							index++
+						}
+					}
+				}
+			}
+		})
+	}
+
+	encoder16byte := []struct {
+		name string
+		fn   func([16]byte) []byte
+	}{
+		{"simd", YEncSIMD},
+	}
+	for _, enc := range encoder16byte {
+		t.Run(enc.name, func(t *testing.T) {
+			var input [8]byte
+			for i := 0; i < 256; i++ {
+				index := i % 8
+				input[index] = uint8(i)
+
+				if index == 7 {
+					for j := 0; j < 8; j++ {
+						demo := [16]byte{5, 19, 0, 20, 18, 128, 64, 9, 52, 185, 222, 3, 255, 42}
+						res := enc.fn(demo)
+						var index int
+						for i := 0; i < len(demo); i++ {
+							if lookupTable[demo[i]].esc {
+								if res[index] != 0x3D {
+									t.Logf("Encoding of %x did not escape", demo[i])
+									t.Fail()
+								}
+								index++
+							}
+							if res[index] != lookupTable[demo[i]].bte {
+								t.Logf("Encoding of %x returned %x but %x was expected", demo[i], res[index], lookupTable[demo[i]].bte)
+								t.Fail()
+							}
+							index++
+						}
 					}
 				}
 			}
@@ -100,11 +149,11 @@ func BenchmarkEncoding(b *testing.B) {
 		fn   func(*[2]byte)
 	}{
 		{"naive-pointer", YEncPtr},
-		{"cgo", CYEnc},
+		// {"cgo", CYEnc},
 	}
 	for _, enc := range encoderPtr {
 		b.Run(enc.name, func(b *testing.B) {
-			for i := 0; i < 256; i++ {
+			for i := 0; i < b.N; i++ {
 				b := [2]byte{0, uint8(i)}
 				enc.fn(&b)
 				_ = b
@@ -126,6 +175,22 @@ func BenchmarkEncodingEscape(b *testing.B) {
 		b.Run(enc.name, func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				_, _ = enc.fn(19)
+			}
+		})
+	}
+	encoderPtr := []struct {
+		name string
+		fn   func(*[2]byte)
+	}{
+		{"naive-pointer", YEncPtr},
+		// {"cgo", CYEnc},
+	}
+	for _, enc := range encoderPtr {
+		b.Run(enc.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				b := [2]byte{0, uint8(i)}
+				enc.fn(&b)
+				_ = b
 			}
 		})
 	}
