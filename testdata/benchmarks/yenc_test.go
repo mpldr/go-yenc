@@ -9,8 +9,8 @@ func TestEncoding(t *testing.T) {
 		name string
 		fn   func(byte) (byte, bool)
 	}{
-		{"naive", YEnc},
 		{"lookup-table", YEncLT},
+		{"naive", YEnc},
 		{"hashmap", YEncHashmap},
 	}
 	for _, enc := range encoder {
@@ -18,6 +18,24 @@ func TestEncoding(t *testing.T) {
 			for i := 0; i < 256; i++ {
 				b, esc := enc.fn(uint8(i))
 				if b != lookupTable[i].bte || esc != lookupTable[i].esc {
+					t.Logf("Encoding of %x returned %x but %x was expected", i, b, lookupTable[i].bte)
+					t.Fail()
+				}
+			}
+		})
+	}
+	encoderPtr := []struct {
+		name string
+		fn   func(*[2]byte)
+	}{
+		{"naive-pointer", YEncPtr},
+	}
+	for _, enc := range encoderPtr {
+		t.Run(enc.name, func(t *testing.T) {
+			for i := 0; i < 256; i++ {
+				b := [2]byte{0, uint8(i)}
+				enc.fn(&b)
+				if b[1] != lookupTable[i].bte || (b[0] == 0x3D) != lookupTable[i].esc {
 					t.Logf("Encoding of %x returned %x but %x was expected", i, b, lookupTable[i].bte)
 					t.Fail()
 				}
@@ -73,6 +91,21 @@ func BenchmarkEncoding(b *testing.B) {
 				} else {
 					_ = []byte{b}
 				}
+			}
+		})
+	}
+	encoderPtr := []struct {
+		name string
+		fn   func(*[2]byte)
+	}{
+		{"naive-pointer", YEncPtr},
+	}
+	for _, enc := range encoderPtr {
+		b.Run(enc.name, func(b *testing.B) {
+			for i := 0; i < 256; i++ {
+				b := [2]byte{0, uint8(i)}
+				enc.fn(&b)
+				_ = b
 			}
 		})
 	}

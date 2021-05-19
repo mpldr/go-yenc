@@ -19,6 +19,15 @@ func YEnc(input byte) (byte, bool) {
 	return input, escape
 }
 
+func YEncPtr(input *[2]byte) {
+	input[1] += 42
+
+	if input[1] == 0x00 || input[1] == 0x0A || input[1] == 0x0D || input[1] == 0x3D {
+		input[1] += 0x40
+		input[0] = 0x3D
+	}
+}
+
 func YEncHashmap(input byte) (byte, bool) {
 	inp := hashmap[input]
 	return inp.bte, inp.esc
