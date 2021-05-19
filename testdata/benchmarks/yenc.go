@@ -1,5 +1,19 @@
 package yenc
 
+// #include <stdlib.h>
+// void yenc(unsigned char **arr) {
+//	(*arr)[1] += 42;
+//	switch((*arr)[1]) {
+//		case 0x00:
+//		case 0x0A:
+//		case 0x0D:
+//		case 0x3D:
+//			(*arr)[0] = 0x3D;
+//			(*arr)[1] += 0x40;
+//	}
+// }
+import "C"
+
 import (
 	"unsafe"
 
@@ -123,4 +137,15 @@ var mask42 = simd.Uint8x16{
 	0x2a,
 	0x2a,
 	0x2a,
+}
+
+func CYEnc(input *[2]byte) {
+	cb := C.CBytes([]byte{0, (*input)[1]})
+	defer C.free(cb)
+
+	C.yenc((**C.uchar)(cb))
+
+	done := C.GoBytes(cb, 2)
+	input[0] = done[0]
+	input[1] = done[1]
 }

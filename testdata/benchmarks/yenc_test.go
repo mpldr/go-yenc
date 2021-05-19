@@ -29,6 +29,7 @@ func TestEncoding(t *testing.T) {
 		fn   func(*[2]byte)
 	}{
 		{"naive-pointer", YEncPtr},
+		{"cgo", CYEnc},
 	}
 	for _, enc := range encoderPtr {
 		t.Run(enc.name, func(t *testing.T) {
@@ -99,6 +100,7 @@ func BenchmarkEncoding(b *testing.B) {
 		fn   func(*[2]byte)
 	}{
 		{"naive-pointer", YEncPtr},
+		{"cgo", CYEnc},
 	}
 	for _, enc := range encoderPtr {
 		b.Run(enc.name, func(b *testing.B) {
