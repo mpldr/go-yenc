@@ -1,4 +1,4 @@
-module git.sr.ht/~poldi1405/go-yenc
+module mpldr.codes/yenc
 
 go 1.16
 
