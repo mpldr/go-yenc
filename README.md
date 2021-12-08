@@ -19,4 +19,4 @@ the actual implementation. The details may change if a faster way occurs to me.
 
 The code is Licensed under the MPL 2.0
 
-Copyright (c) 2020 Moritz Poldrack
+Copyright (c) 2020-2021 Moritz Poldrack
